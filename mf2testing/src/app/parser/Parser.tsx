@@ -10,10 +10,11 @@ const defaultSlots: SlotMap = {
 type ParserProps = {
   parts: MessagePart<never>[];
 };
+
 /**
  * Parses MessagePart[] array defined my messageformat.
- * Returns a
- * @param param0
+ * Returns a ReactNode. The returned ReactNode is a built of each part provided in the parts parameter.
+ * @param parts array of `MessagePart`s
  */
 export function parseMessageParts({ parts }: ParserProps): React.ReactNode {
   type Frame = { name: string; children: React.ReactNode[] };
@@ -29,6 +30,7 @@ export function parseMessageParts({ parts }: ParserProps): React.ReactNode {
       push(part.value ?? "");
     } else if (part.type === "bidiIsolation") {
       // Use the actual code points to keep source clean
+      // Can maybe just ignore these characters
       push(part.value === "⁨" ? "\u2068" : "\u2069");
     } else if (part.type === "markup" && part.kind === "open") {
       stack.push({ name: part.name, children: [] });
@@ -48,7 +50,7 @@ export function parseMessageParts({ parts }: ParserProps): React.ReactNode {
   }
 
   while (stack.length > 1) {
-    const frame = stack.pop()!; // theoretically might be undefined, but we know it will "always" have at least one element
+    const frame = stack.pop()!; // theoretically might be undefined, but we know it will always have at least one element
     stack[stack.length - 1]?.children.push(...frame.children);
   }
 
