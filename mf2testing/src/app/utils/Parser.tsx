@@ -1,4 +1,4 @@
-import { MessageFormat } from "messageformat";
+import { MessagePart } from "messageformat";
 import { ReactNode } from "react";
 
 type SlotMap = Record<string, (children: React.ReactNode) => React.ReactNode>;
@@ -6,11 +6,11 @@ type SlotMap = Record<string, (children: React.ReactNode) => React.ReactNode>;
 const defaultSlots: SlotMap = {
   bold: (children) => <strong>{children}</strong>,
   italic: (children) => <em>{children}</em>,
+  underline: (children) => <u>{children}</u>,
 };
 
 type ParserProps = {
-  mf : MessageFormat,
-  input: Record<string, string>
+  parts: MessagePart<never>[],
 };
 
 
@@ -19,9 +19,7 @@ type ParserProps = {
  * Returns a ReactNode. The returned ReactNode is a built of each part provided in the parts parameter.
  * @param parts array of `MessagePart`s
  */
-export function FormatMessage({ mf, input }: ParserProps): ReactNode {
-  const parts = mf.formatToParts(input)
-
+export function parser({ parts }: ParserProps): ReactNode {
   type Frame = { name: string; children: React.ReactNode[] };
   console.log(parts);
 

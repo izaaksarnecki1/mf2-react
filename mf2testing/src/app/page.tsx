@@ -1,26 +1,18 @@
-import { MessageFormat } from "messageformat";
-import { FormatMessage } from "./parser/Parser";
+import { FormatMessage } from "./components/FormatMessage";
 
 export default function Home() {
-  const msg = "Hello {#bold}{$user} {$etternavn}{/bold}.";
-
-  const mf = new MessageFormat(["en", "no"], msg);
-
-  // output of this is an array of messageparts
-  const result = mf.formatToParts({ user: "Emilie", etternavn: "hamang"});
-
-  console.log(result);
-
+  const msg = "Hello {#bold}Navn{/bold}"
   return <>
     <FormatMessage
-      mf={new MessageFormat(["no"], "Hello {#bold}{$user} {$etternavn}{/bold}.")}
+
+      msg={"Hello {#italic}{#bold}{#underline}{$user} {$etternavn}{/underline}{/bold}{/italic}."}
       input={{ user: "Emilie", etternavn: "Hamang"}}
     />
     <br></br>
-    <FormatMessage
+    {/* <FormatMessage
       mf={new MessageFormat(["no"], "Jeg er {#italic}skeiv{/italic}.")}
       input = {{}}
-    />
+    /> */}
   </>;
 }
 

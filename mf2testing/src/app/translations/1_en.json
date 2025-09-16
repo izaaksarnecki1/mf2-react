@@ -1,0 +1,6 @@
+{
+  "Welcome": {
+    "message": "Hello {#bold}{$user} {$etternavn}{/bold}.",
+    "inputs": ["user", "etternavn"]
+  }
+}
