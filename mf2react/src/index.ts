@@ -1,2 +1,1 @@
-export * from "./Button";
-export * from "./App";
+export * from "./components/FormatMessage"
