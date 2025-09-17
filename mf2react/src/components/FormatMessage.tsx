@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { MessageFormat } from "messageformat";
-import { parser } from "../utils/Parser";
+import { parser } from "../utils/parser";
 
 type FormatMessageProps = {
   msg: string;
