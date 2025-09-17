@@ -10,9 +10,8 @@ const defaultSlots: SlotMap = {
 };
 
 type ParserProps = {
-  parts: MessagePart<never>[],
+  parts: MessagePart<never>[];
 };
-
 
 /**
  * Parses MessagePart[] array defined my messageformat.
@@ -55,15 +54,13 @@ export function parser({ parts }: ParserProps): ReactNode {
     }
   }
 
-
   while (stack.length > 1) {
-    const frame = stack.pop()!; 
+    const frame = stack.pop()!;
     stack[stack.length - 1]?.children.push(...frame.children);
   }
-  
+
   return wrapChildren(root.children);
 }
-
 
 function wrapChildren(children: ReactNode[]) {
   return children.length === 1 ? children[0] : children;

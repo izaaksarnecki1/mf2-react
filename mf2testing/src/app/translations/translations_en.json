@@ -1,0 +1,6 @@
+{
+    "locale": "en",
+    "messages": {
+        "Welcome": "Hello {#bold}{$user}{/bold}"
+    }
+}
