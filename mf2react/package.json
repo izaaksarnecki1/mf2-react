@@ -25,7 +25,7 @@
         "react-dom": ">=18"
     },
     "dependencies": {
-        "messageformat": "4.0.0-10",
+        "messageformat": "^4.0.0-10",
         "tsup": "^8.5.0"
     },
     "devDependencies": {
