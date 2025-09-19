@@ -20,29 +20,64 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
-  App: () => App,
-  Button: () => Button
+  FormatMessage: () => FormatMessage
 });
 module.exports = __toCommonJS(index_exports);
 
-// src/Button.tsx
-var React = require("react");
-var import_jsx_runtime = require("react/jsx-runtime");
-var Button = ({ children }) => {
-  return /* @__PURE__ */ (0, import_jsx_runtime.jsx)("button", { style: { padding: "0.5rem 1rem" }, children });
-};
-
-// src/App.tsx
+// src/components/FormatMessage.tsx
 var import_messageformat = require("messageformat");
-var App = () => {
-  const msg = "Hello {$user}";
-  const mf = new import_messageformat.MessageFormat(["en", "no"], msg);
-  const result = mf.format();
-  console.log(result);
+
+// src/utils/parser.tsx
+var import_jsx_runtime = require("react/jsx-runtime");
+var defaultSlots = {
+  bold: (children) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("strong", { children }),
+  italic: (children) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("em", { children }),
+  underline: (children) => /* @__PURE__ */ (0, import_jsx_runtime.jsx)("u", { children })
 };
+function parser({ parts }) {
+  console.log(parts);
+  const root = { name: "__root__", children: [] };
+  const stack = [root];
+  const push = (node) => stack[stack.length - 1]?.children.push(node);
+  for (const part of parts) {
+    if (part.type === "text") {
+      push(part.value);
+    } else if (part.type === "string") {
+      push(part.value ?? "");
+    } else if (part.type === "bidiIsolation") {
+      push(part.value === "\u2068" ? "\u2068" : "\u2069");
+    } else if (part.type === "markup" && part.kind === "open") {
+      stack.push({ name: part.name, children: [] });
+    } else if (part.type === "markup" && part.kind === "close") {
+      const frame = stack.pop();
+      if (!frame || frame.name !== part.name) {
+        push(frame ? frame.children : null);
+        continue;
+      }
+      const render = defaultSlots[frame.name];
+      push(
+        render ? render(wrapChildren(frame.children)) : wrapChildren(frame.children)
+      );
+    }
+  }
+  while (stack.length > 1) {
+    const frame = stack.pop();
+    stack[stack.length - 1]?.children.push(...frame.children);
+  }
+  return wrapChildren(root.children);
+}
+function wrapChildren(children) {
+  return children.length === 1 ? children[0] : children;
+}
+
+// src/components/FormatMessage.tsx
+function FormatMessage({ msg, input }) {
+  const mf = new import_messageformat.MessageFormat(["no"], msg);
+  const parts = mf.formatToParts(input);
+  return parser({ parts });
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  App,
-  Button
+  FormatMessage
 });
 //# sourceMappingURL=index.js.map
