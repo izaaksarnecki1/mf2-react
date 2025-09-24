@@ -3,7 +3,7 @@ import { FormatMessage } from "./components/FormatMessage";
 import { useLanguageStore } from "./store/useLangaugeStore";
 
 export default function Home() {
-  const { updateLanguage } = useLanguageStore();
+  const { language, updateLanguage } = useLanguageStore();
 
   const switchToNorwegian = () => {
     updateLanguage("no");
@@ -16,6 +16,7 @@ export default function Home() {
   return (
     <div className="m-2">
       <FormatMessage
+        key={language}
         msg={"Welcome"}
         input={{ user: "Emilie", etternavn: "Hamang" }}
       />

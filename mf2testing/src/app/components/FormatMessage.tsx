@@ -1,3 +1,4 @@
+"use client";
 import { MessageFormat } from "messageformat";
 import { ReactNode } from "react";
 import { parser } from "../utils/Parser";
