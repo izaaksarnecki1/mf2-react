@@ -3,9 +3,6 @@ import { TranslationFile } from "../types/Translation";
 import { Language } from "../types/Language";
 import en from "../translations/translations_en.json";
 
-// export function setTranslationsPath(path: string): void {
-//   translationsPath = path;
-
 interface LanguageState {
   language: Language;
   activeJson: TranslationFile;
@@ -14,7 +11,7 @@ interface LanguageState {
 
 async function loadJson(lang: Language): Promise<TranslationFile> {
   try {
-    const module = await await import(
+    const module = await import(
       // hacky solution to import problem.
       /* webpackInclude: /translations_[a-z]+\.json$/ */
       "../translations/translations_" + lang + ".json"
