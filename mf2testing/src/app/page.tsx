@@ -1,16 +1,34 @@
+"use client";
 import { FormatMessage } from "./components/FormatMessage";
-import translations from './translations/1_en.json';
+import { useLanguageStore } from "./store/useLangaugeStore";
 
 export default function Home() {
-  return <>
-    <FormatMessage
-      msg={translations["Welcome"].message}
-      input={{ user: "Emilie", etternavn: "Hamang" }}
-    />
-    <br></br>
-    <FormatMessage
-      msg={translations["Goodbye"].message}
-      input={{ user: "Emilie" }}
-    />
-  </>;
+  const { updateLanguage } = useLanguageStore();
+
+  const switchToNorwegian = () => {
+    updateLanguage("no");
+  };
+
+  const switchToEnglish = () => {
+    updateLanguage("en");
+  };
+
+  return (
+    <div className="m-2">
+      <FormatMessage
+        msg={"Welcome"}
+        input={{ user: "Emilie", etternavn: "Hamang" }}
+      />
+      <br></br>
+      <div className="flex flex-auto gap-2">
+        <button onClick={switchToNorwegian} className="outline-2 p-2">
+          Norwegian
+        </button>
+        <button onClick={switchToEnglish} className="outline-2 p-2">
+          English
+        </button>
+      </div>
+      <br></br>
+    </div>
+  );
 }
