@@ -1,18 +1,21 @@
 import { create } from "zustand";
-import { Translation } from "../types/Translation";
+import { TranslationFile } from "../types/Translation";
 import { Language } from "../types/Language";
 
 interface LanguageState {
-  language: string;
-  activeJson: Translation | any;
+  language: Language;
+  activeJson: TranslationFile;
   updateLanguage: (lang: Language) => void;
 }
 
-function loadJson(lang: Language): Translation {
+function loadJson(lang: Language): TranslationFile {
   return {
-    messagename: {
-      message: "test",
-      input: ["noe"],
+    locale: "en",
+    messages: {
+      Welcome: {
+        message: "test",
+        inputs: ["test"],
+      },
     },
   };
 }
@@ -25,7 +28,6 @@ export const useLanguageStore = create<LanguageState>((set) => ({
    * @param lang string defining current lanugage.
    */
   updateLanguage: (lang: Language) => {
-    set((state) => ({ language: lang }));
-    set((state) => ({ activeJson: loadJson(lang) }));
+    set(() => ({ language: lang, activeJson: loadJson(lang) }));
   },
 }));

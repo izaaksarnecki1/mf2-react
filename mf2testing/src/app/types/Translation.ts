@@ -1,10 +1,13 @@
-export type TranslationFile = {
-  translations: Translation[];
-};
+import { Language } from "./Language";
 
 export type Translation = {
-  messagename: {
-    message: string;
-    input: string[];
-  };
+  message: string;
+  inputs: string[];
+};
+
+export type TranslationMap = Record<string, Translation>;
+
+export type TranslationFile = {
+  locale: Language;
+  messages: TranslationMap;
 };

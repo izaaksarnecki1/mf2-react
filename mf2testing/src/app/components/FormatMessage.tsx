@@ -2,7 +2,6 @@ import { MessageFormat } from "messageformat";
 import { ReactNode } from "react";
 import { parser } from "../utils/Parser";
 import { useLanguageStore } from "../store/useLangaugeStore";
-import { Translation } from "../types/Translation";
 
 type FormatMessageProps = {
   msg: string;
@@ -12,9 +11,14 @@ type FormatMessageProps = {
 export function FormatMessage({ msg, input }: FormatMessageProps): ReactNode {
   const { language, activeJson } = useLanguageStore();
 
-  // msg should be one of the message keys from a json file. msg arg should also be rename
-  // then, read the actual message from the json file.
-  const mf = new MessageFormat([language], msg);
+  const mfmsg = activeJson.messages[msg];
+
+  if (!mfmsg) {
+    return <>{msg}</>;
+  }
+
+  const mf = new MessageFormat([language], mfmsg.message);
+
   const parts = mf.formatToParts(input);
 
   return parser({ parts });
