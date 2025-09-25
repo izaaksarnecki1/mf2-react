@@ -2,7 +2,7 @@
 import { MessageFormat } from "messageformat";
 import { ReactNode } from "react";
 import { parser } from "../utils/Parser";
-import { useLanguageStore } from "../store/useLangaugeStore";
+import { useLanguageStore } from "../store/useLanguageStore";
 
 type FormatMessageProps = {
   msg: string;

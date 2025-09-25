@@ -30,11 +30,10 @@ export const useLanguageStore = create<LanguageState>((set) => ({
 
   /**
    * Updates current language & changes which json files is loaded based on current language.
-   * @param lang string defining current lanugage.
+   * @param lang string defining current language.
    */
   updateLanguage: async (lang: Language) => {
     const json = await loadJson(lang);
-    const fresh = JSON.parse(JSON.stringify(json));
-    set(() => ({ language: lang, activeJson: fresh }));
+    set(() => ({ language: lang, activeJson: json }));
   },
 }));

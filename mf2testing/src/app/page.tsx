@@ -1,6 +1,6 @@
 "use client";
 import { FormatMessage } from "./components/FormatMessage";
-import { useLanguageStore } from "./store/useLangaugeStore";
+import { useLanguageStore } from "./store/useLanguageStore";
 
 export default function Home() {
   const { language, updateLanguage } = useLanguageStore();
