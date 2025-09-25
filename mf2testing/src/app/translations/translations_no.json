@@ -1,3 +1,18 @@
 {
-    "Welcome": "Hei {#bold}{$user}{/bold}"
+  "locale": "no",
+  "messages": {
+    "Welcome": {
+      "message": "Hei fra norge {#bold}{$user} {$etternavn}{/bold}.",
+      "inputs": [
+        "user",
+        "etternavn"
+      ]
+    },
+    "Goodbye": {
+      "message": "Hade {#italic}{$user}{/italic}!",
+      "inputs": [
+        "user"
+      ]
+    }
+  }
 }
