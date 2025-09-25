@@ -1,18 +1,6 @@
 {
-  "locale": "en",
-  "messages": {
-    "Welcome": {
-      "message": "Hello {#bold}{$user} {$etternavn}{/bold}.",
-      "inputs": [
-        "user",
-        "etternavn"
-      ]
-    },
-    "Goodbye": {
-      "message": "Goodbye {#italic}{$user}{/italic}.",
-      "inputs": [
-        "user"
-      ]
+    "locale": "en",
+    "messages": {
+        "Welcome": "Hello {#bold}{$user}{/bold}"
     }
-  }
 }

@@ -1,5 +1,6 @@
 import type { MessagePart } from "messageformat";
-import type { SlotMap } from "../types/SlotMap";
+
+type SlotMap = Record<string, (children: React.ReactNode) => React.ReactNode>;
 
 const defaultSlots: SlotMap = {
   bold: (children) => <strong>{children}</strong>,
@@ -10,10 +11,9 @@ type ParserProps = {
   parts: MessagePart<never>[];
   slots: SlotMap;
 };
-
 /**
  * Parses MessagePart[] array defined my messageformat.
- * Returns a tree of JSX components
+ * Returns a
  * @param param0
  */
 export function parseMessageParts({

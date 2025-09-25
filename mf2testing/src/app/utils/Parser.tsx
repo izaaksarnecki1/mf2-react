@@ -20,6 +20,7 @@ type ParserProps = {
  */
 export function parser({ parts }: ParserProps): ReactNode {
   type Frame = { name: string; children: React.ReactNode[] };
+  console.log(parts);
 
   const root: Frame = { name: "__root__", children: [] };
   const stack: Frame[] = [root];
