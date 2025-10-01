@@ -9,10 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@messageformat/core": "^3.4.0",
+    "i18next": "^25.5.2",
     "messageformat": "4.0.0-10",
     "next": "15.5.2",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "react-i18next": "^16.0.0",
     "zustand": "^5.0.8"
   },
   "devDependencies": {
