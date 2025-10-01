@@ -1,10 +1,10 @@
 "use client";
-import { FormatMessage } from "./components/FormatMessage";
+import { useState } from "react";
 import MF2PostProcessor from "./plugin";
 import { useLanguageStore } from "./store/useLanguageStore";
 
 import i18n from "i18next";
-import { initReactI18next, useTranslation } from "react-i18next";
+import { initReactI18next, Trans, useTranslation } from "react-i18next";
 
 i18n
   .use(initReactI18next)
@@ -20,12 +20,19 @@ i18n
             "{#bold}How many apples:{/bold} {value, plural, one {# apple} other {# apples}}",
         },
       },
+      no: {
+        translation: {
+          apples:
+            "{#bold}Hvor mange eple:{/bold} {value, plural, one {# eple} other {# epler}}",
+        },
+      },
     },
   });
 
 export default function Home() {
   const { language, updateLanguage } = useLanguageStore();
   const { t } = useTranslation();
+  const [count, setCount] = useState(1);
 
   const switchToNorwegian = () => {
     updateLanguage("no");
@@ -39,12 +46,27 @@ export default function Home() {
 
   return (
     <div className="m-2">
-      <FormatMessage
-        key={language}
-        msg={"Welcome"}
-        input={{ user: "Emilie", etternavn: "Hamang" }}
-      />
-      <p>{t("apples", { value: 2 })}</p>
+      <div className="flex items-center gap-3">
+        <button
+          className="outline-2 p-2"
+          onClick={() => setCount((c) => Math.max(0, c - 1))}
+        >
+          -
+        </button>
+        <span>value = {count}</span>
+        <button
+          className="outline-2 p-2"
+          onClick={() => setCount((c) => c + 1)}
+        >
+          +
+        </button>
+      </div>
+
+      <p className="mt-3">
+        <Trans i18nKey="apples" values={{ value: count }} />
+      </p>
+
+      {/* <p>{t("apples", { value: 2 })}</p> */}
       <br></br>
       <div className="flex flex-auto gap-2">
         <button onClick={switchToNorwegian} className="outline-2 p-2">

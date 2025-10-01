@@ -1,4 +1,4 @@
-import type { PostProcessorModule } from "i18next";
+import type { PostProcessorModule, TOptions } from "i18next";
 import MessageFormat from "@messageformat/core";
 
 const mflng = new Map<string, MessageFormat>();
@@ -13,6 +13,36 @@ const getMf = (lng?: string) => {
   return mf;
 };
 
+const tagAlias: Record<string, string> = {
+  bold: "strong",
+  b: "strong",
+  i: "em",
+  italic: "em",
+  br: "br",
+  u: "u",
+  s: "s",
+  code: "code",
+  small: "small",
+  strong: "strong",
+  em: "em",
+};
+
+function mf2CurlyToAngle(input: string): string {
+  input = input.replace(/\{#([A-Za-z][\w-]*)\s*\/\}/g, (_, t) => {
+    const html = tagAlias[t] || t;
+    return `<${html} />`;
+  });
+  input = input.replace(
+    /\{#([A-Za-z][\w-]*)\}/g,
+    (_, t) => `<${tagAlias[t] || t}>`
+  );
+  input = input.replace(
+    /\{\/([A-Za-z][\w-]*)\}/g,
+    (_, t) => `</${tagAlias[t] || t}>`
+  );
+  return input;
+}
+
 const compiledCache = new Map<
   string,
   (params: Record<string, unknown>) => string
@@ -21,10 +51,15 @@ const compiledCache = new Map<
 const MF2PostProcessor: PostProcessorModule = {
   name: "mf2",
   type: "postProcessor",
-  process: (value: any, _key, options: any, translator: any) => {
+  process: (
+    value: string,
+    _key: string | string[],
+    options: TOptions,
+    translator: any
+  ) => {
     if (typeof value !== "string") return value;
 
-    const lng: string | undefined = options?.lng || translator?.lang;
+    const lng: string = options?.lng || translator?.lang;
     const mf = getMf(lng);
 
     const cacheKey = `${lng || "en"}__${value}`;
@@ -35,8 +70,9 @@ const MF2PostProcessor: PostProcessorModule = {
     }
 
     try {
-      return fn({ ...options });
-    } catch (_e) {
+      const out = fn({ ...options });
+      return typeof out === "string" ? mf2CurlyToAngle(out) : out;
+    } catch {
       return value;
     }
   },
