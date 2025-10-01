@@ -1,33 +1,9 @@
 "use client";
 import { useState } from "react";
-import MF2PostProcessor from "./plugin";
 import { useLanguageStore } from "./store/useLanguageStore";
 
-import i18n from "i18next";
-import { initReactI18next, Trans, useTranslation } from "react-i18next";
-
-i18n
-  .use(initReactI18next)
-  .use(MF2PostProcessor)
-  .init({
-    lng: "en",
-    debug: true,
-    postProcess: ["mf2"],
-    resources: {
-      en: {
-        translation: {
-          apples:
-            "{#bold}How many apples:{/bold} {value, plural, one {# apple} other {# apples}}",
-        },
-      },
-      no: {
-        translation: {
-          apples:
-            "{#bold}Hvor mange eple:{/bold} {value, plural, one {# eple} other {# epler}}",
-        },
-      },
-    },
-  });
+import i18n from "../i18n";
+import { Trans, useTranslation } from "react-i18next";
 
 export default function Home() {
   const { language, updateLanguage } = useLanguageStore();
