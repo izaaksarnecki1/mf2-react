@@ -18,6 +18,7 @@ const tagAlias: Record<string, string> = {
   b: "strong",
   i: "em",
   italic: "em",
+  italics: "em",
   br: "br",
   u: "u",
   s: "s",
@@ -70,7 +71,14 @@ const MF2PostProcessor: PostProcessorModule = {
     }
 
     try {
-      const out = fn({ ...options });
+      let out = fn({ ...options });
+      if (Array.isArray(out)) {
+        out = out.join("");
+      }
+
+      if (typeof out === "object" && out !== null) {
+        out = String(out);
+      }
       return typeof out === "string" ? mf2CurlyToAngle(out) : out;
     } catch {
       return value;

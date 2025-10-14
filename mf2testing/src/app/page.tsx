@@ -1,22 +1,17 @@
 "use client";
 import { useState } from "react";
-import { useLanguageStore } from "./store/useLanguageStore";
 
 import i18n from "../i18n";
-import { Trans, useTranslation } from "react-i18next";
+import { Trans } from "react-i18next";
 
 export default function Home() {
-  const { language, updateLanguage } = useLanguageStore();
-  const { t } = useTranslation();
   const [count, setCount] = useState(1);
 
   const switchToNorwegian = () => {
-    updateLanguage("no");
     i18n.changeLanguage("no");
   };
 
   const switchToEnglish = () => {
-    updateLanguage("en");
     i18n.changeLanguage("en");
   };
 

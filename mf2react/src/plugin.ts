@@ -1,7 +1,9 @@
-// src/plugin.ts
+import type { PostProcessorModule, TOptions } from "i18next";
 import MessageFormat from "@messageformat/core";
-var mflng = /* @__PURE__ */ new Map();
-var getMf = (lng) => {
+
+const mflng = new Map<string, MessageFormat>();
+
+const getMf = (lng?: string) => {
   const lang = lng || "en";
   let mf = mflng.get(lang);
   if (!mf) {
@@ -10,7 +12,8 @@ var getMf = (lng) => {
   }
   return mf;
 };
-var tagAlias = {
+
+const tagAlias: Record<string, string> = {
   bold: "strong",
   b: "strong",
   i: "em",
@@ -21,9 +24,10 @@ var tagAlias = {
   code: "code",
   small: "small",
   strong: "strong",
-  em: "em"
+  em: "em",
 };
-function mf2CurlyToAngle(input) {
+
+function mf2CurlyToAngle(input: string): string {
   input = input.replace(/\{#([A-Za-z][\w-]*)\s*\/\}/g, (_, t) => {
     const html = tagAlias[t] || t;
     return `<${html} />`;
@@ -38,29 +42,40 @@ function mf2CurlyToAngle(input) {
   );
   return input;
 }
-var compiledCache = /* @__PURE__ */ new Map();
-var MF2PostProcessor = {
+
+const compiledCache = new Map<
+  string,
+  (params: Record<string, unknown>) => string
+>();
+
+export const MF2PostProcessor: PostProcessorModule = {
   name: "mf2",
   type: "postProcessor",
-  process: (value, _key, options, translator) => {
+  process: (
+    value: string,
+    _key: string | string[],
+    options: TOptions,
+    translator: any
+  ) => {
     if (typeof value !== "string") return value;
-    const lng = options?.lng || translator?.lang;
+
+    const lng: string = options?.lng || translator?.lang;
     const mf = getMf(lng);
+
     const cacheKey = `${lng || "en"}__${value}`;
     let fn = compiledCache.get(cacheKey);
     if (!fn) {
       fn = mf.compile(value);
       compiledCache.set(cacheKey, fn);
     }
+
     try {
       const out = fn({ ...options });
       return typeof out === "string" ? mf2CurlyToAngle(out) : out;
     } catch {
       return value;
     }
-  }
+  },
 };
-export {
-  MF2PostProcessor
-};
-//# sourceMappingURL=index.mjs.map
+
+export default MF2PostProcessor;

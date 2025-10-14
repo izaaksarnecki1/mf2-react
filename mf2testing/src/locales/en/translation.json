@@ -1,3 +1,3 @@
 {
-  "apples": "{#bold}How many apples:{/bold} {value, plural, one {# apple} other {# apples}}"
+  "apples": "{#italics}{#bold}How many apples:{/bold}{/italics} {value, plural, one {# apple} other {# apples}}"
 }

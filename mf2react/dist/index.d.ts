@@ -1,11 +1,5 @@
-import * as react_jsx_runtime from 'react/jsx-runtime';
-import * as React from 'react';
+import { PostProcessorModule } from 'i18next';
 
-type ButtonProps = {
-    children: React.ReactNode;
-};
-declare const Button: ({ children }: ButtonProps) => react_jsx_runtime.JSX.Element;
+declare const MF2PostProcessor: PostProcessorModule;
 
-declare const App: () => void;
-
-export { App, Button, type ButtonProps };
+export { MF2PostProcessor };
