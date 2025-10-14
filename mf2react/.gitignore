@@ -39,4 +39,4 @@ pnpm-debug.log*
 .idea
 *.swp
 
-dist/
+dist
