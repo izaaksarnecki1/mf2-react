@@ -1,0 +1,3 @@
+{
+  "apples": "{#italics}{#bold}How many apples:{/bold}{/italics} {value, plural, one {# apple} other {# apples}}"
+}

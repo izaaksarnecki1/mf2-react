@@ -1,0 +1,3 @@
+{
+  "apples": "{#bold}Hvor mange epler:{/bold} {value, plural, one {# eple} other {# epler}}"
+}
