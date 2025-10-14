@@ -1,6 +1,6 @@
 {
-  "name": "@mf2/react",
-  "version": "0.1.0",
+  "name": "mf2react",
+  "version": "0.1.1",
   "description": "MessageFormat v2 postProcessor for i18next/react-i18next",
   "private": false,
   "main": "dist/index.js",
@@ -25,6 +25,7 @@
   "peerDependencies": {
     "@messageformat/core": "^3.4.0",
     "i18next": "^25.6.0",
+    "react-i18next": "^16.0.0",
     "tsup": "^8.5.0"
   },
   "devDependencies": {
