@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - "mf2react/**"
+  workflow_dispatch: {}
 
 permissions:
   contents: read
