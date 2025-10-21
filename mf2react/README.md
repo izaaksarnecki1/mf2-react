@@ -24,7 +24,7 @@ This package bridges the gap by combining two worlds:
 
 You get precise grammatical control and rich formatting, without giving up i18next's familiar API or resorting to `dangerouslySetInnerHTML`
 
-## Qucik start
+## Quick start
 
 1. Register the post-processor
 
