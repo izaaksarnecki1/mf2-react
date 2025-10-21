@@ -1,0 +1,67 @@
+name: Publish @mf2/react (OIDC)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "mf2react/**"
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mf2react
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Detect version change
+        id: ver
+        run: |
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            BEFORE="HEAD^"
+          else
+            BEFORE="HEAD"
+          fi
+          if git diff --quiet $BEFORE HEAD -- package.json; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            BEFORE_VER=$(git show $BEFORE:mf2react/package.json | jq -r .version 2>/dev/null || echo "")
+            NOW_VER=$(jq -r .version package.json)
+            if [ "$BEFORE_VER" != "$NOW_VER" ] && [ -n "$NOW_VER" ]; then
+              echo "changed=true" >> $GITHUB_OUTPUT
+            else
+              echo "changed=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: Setup Node
+        if: steps.ver.outputs.changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Install
+        if: steps.ver.outputs.changed == 'true'
+        run: npm ci
+
+      - name: Build
+        if: steps.ver.outputs.changed == 'true'
+        run: npm run build
+
+      - name: Publish to npm (OIDC, no token)
+        if: steps.ver.outputs.changed == 'true'
+        run: npm publish --access public --provenance
+
+      - name: Skip (no version change)
+        if: steps.ver.outputs.changed != 'true'
+        run: echo "No version bump in mf2react/package.json — skipping publish."
