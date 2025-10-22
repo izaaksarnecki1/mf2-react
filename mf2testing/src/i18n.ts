@@ -21,6 +21,10 @@ i18n
     interpolation: {
       escapeValue: false, // done by react
     },
+    react: {
+      // the user should add all supported/needed html-tags supported by messageformat2
+      transKeepBasicHtmlNodesFor: ["i", "em", "strong", "br", "u", "s", "code", "small"]
+    }
   });
 
 export default i18n;
