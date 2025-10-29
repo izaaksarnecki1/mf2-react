@@ -46,7 +46,7 @@ i18next
   });
 ```
 
-For the `resources` field in the the `init` function, you may add some json files which use the following structure:
+For the `resources` field in the `init` function, you may add some json files which use the following structure:
 
 ```json
 {
@@ -62,7 +62,7 @@ An example may be:
 }
 ```
 
-> You can read more about mf2 syntax in the [MessageFormat2 syntax documentation](https://messageformat.unicode.org/docs/quick-start/#markup).
+> You can read more about MF2 syntax in the [MessageFormat2 syntax documentation](https://messageformat.unicode.org/docs/quick-start/#markup).
 
 Good practice would be to store all translations in a `locale` folder which can be subdivided into all languages/locales you may want to use.
 
