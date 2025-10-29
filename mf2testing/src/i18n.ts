@@ -5,10 +5,12 @@ import MF2PostProcessor from "./app/plugin";
 
 import en from "./locales/en/translation.json";
 import no from "./locales/no/translation.json";
+import MF2ReactPreset from "./app/config";
 
 i18n
   .use(initReactI18next)
   .use(MF2PostProcessor)
+  .use(MF2ReactPreset)
   .init({
     lng: "en",
     debug: true,
@@ -21,6 +23,10 @@ i18n
     interpolation: {
       escapeValue: false, // done by react
     },
+    react: {
+      // the user should add all supported/needed html-tags supported by messageformat2
+      transKeepBasicHtmlNodesFor: ["i", "em", "strong", "br", "u", "s", "code", "small"]
+    }
   });
 
 export default i18n;
