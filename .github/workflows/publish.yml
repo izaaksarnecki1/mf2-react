@@ -61,7 +61,7 @@ jobs:
 
       - name: Publish to npm (OIDC, no token)
         if: steps.ver.outputs.changed == 'true'
-        run: npm publish --access public --provenance
+        run: npm publish
 
       - name: Skip (no version change)
         if: steps.ver.outputs.changed != 'true'
