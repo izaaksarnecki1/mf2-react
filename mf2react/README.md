@@ -1,4 +1,4 @@
-# @mf2/react
+# mf2react
 
 A tiny, fast **MessageFormat v2 (MF2)** post-processor for i18next / react-i18next.
 
@@ -7,7 +7,7 @@ It compiles MF2 messages (via @messageformat/core), caches them per-language, an
 ## Installation
 
 ```bash
-npm i @mf2/react @messageformat/core i18next react-i18next
+npm i mf2react
 ```
 
 ## Why this exists
@@ -20,31 +20,77 @@ This package bridges the gap by combining two worlds:
 
 - It lets you keep/use MF2 syntax for logic (plural, select etc.)
 - It adds support for lightweight markup using curly tags like {#strong} and {#em}.
-- It converts those curly tags to real angle-bracket tags that can be safely rendered by `<Trans>` from `react-i18next`.
+- It converts those curly tags to real angle-bracket tags that can be safely rendered by the `<Trans>` component from `react-i18next`.
 
 You get precise grammatical control and rich formatting, without giving up i18next's familiar API or resorting to `dangerouslySetInnerHTML`
 
 ## Quick start
 
-1. Register the post-processor
+### 1. Register the post-processor
 
 ```ts
 // i18n.ts
 import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
-import { MF2PostProcessor } from "@mf2/react";
+import { MF2PostProcessor } from "mf2react";
 
 i18next
-  .use(MF2PostProcessor)
+  .use(MF2PostProcessor) // registers the post-processor
   .use(initReactI18next)
   .init({
-    lng: "en",
-    postProcess: ["mf2"]
-    resources: {/***/},
+    lng: "en", // default lang/locale
+    postProcess: ["mf2"], // specify mf2 as postprocesssor
+    resources: {
+      /**/
+    },
   });
 ```
 
-2. Render with `<Trans>`
+For the `resources` field in the the `init` function, you may add some json files which use the following structure:
+
+```json
+{
+  "[message name]": "[translation in mf2 format]"
+}
+```
+
+An example may be:
+
+```json
+{
+  "apples": "{#bold}How many apples:{/bold} {value, plural, one {# apple} other {# apples}}"
+}
+```
+
+> You can read more about mf2 syntax in the [MessageFormat2 syntax documentation](https://messageformat.unicode.org/docs/quick-start/#markup).
+
+Good practice would be to store all translations in a `locale` folder which can be subdivided into all languages/locales you may want to use.
+
+<!-- To avoid XSS, you may or may not want to include
+`interpolation: {
+      escapeValue: false,
+    }`
+in the `init` function. -->
+
+To add your json files, you may import them as such
+
+```ts
+import en from "./locales/en/translation.json";
+import no from "./locales/no/translation.json";
+```
+
+and register them as in `resources`:
+
+```ts
+resources: {
+  en: { translation: en },
+  no: { translation: no },
+},
+```
+
+---
+
+### 2. Render with `<Trans>`
 
 ```ts
 // App.tsx
@@ -65,6 +111,16 @@ export function App() {
   );
 }
 ```
+
+> You can read more about the Trans component in the [react-i18next documentation](https://react.i18next.com/latest/trans-component)
+
+For values you should insert the necessary keys you specify in your translations. For example, using the apples example from part 1, the `Trans` component could look like:
+
+```ts
+<Trans i18nKey="apples" values={{ value: count }} />
+```
+
+where count is some variable `let count: number;`
 
 ## Notes and limitations
 
