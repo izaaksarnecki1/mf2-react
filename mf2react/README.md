@@ -26,7 +26,7 @@ You get precise grammatical control and rich formatting, without giving up i18ne
 
 ## Quick start
 
-1. Register the post-processor and configure `transKeepBasicHtmlNodesFor`. The example contains all tags possible supported by MessageFormat2 in addition to the default configuration.
+### 1. Register the post-processor
 
 ```ts
 // i18n.ts
@@ -38,12 +38,11 @@ i18next
   .use(MF2PostProcessor) // registers the post-processor
   .use(initReactI18next)
   .init({
-    lng: "en",
-    postProcess: ["mf2"]
-    resources: {/***/},
-    react: {
-      transKeepBasicHtmlNodesFor: ["br", "strong","i", "p", "em", "u", "s", "code"," small"]
-    }
+    lng: "en", // default lang/locale
+    postProcess: ["mf2"], // specify mf2 as postprocesssor
+    resources: {
+      /**/
+    },
   });
 ```
 
