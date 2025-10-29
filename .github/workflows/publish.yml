@@ -1,4 +1,4 @@
-name: Publish @mf2/react (OIDC)
+name: Publish mf2react (OIDC)
 
 on:
   push:

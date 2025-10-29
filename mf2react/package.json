@@ -1,6 +1,6 @@
 {
   "name": "mf2react",
-  "version": "0.1.3-ci-test.2",
+  "version": "0.1.4-ci-test.2",
   "description": "MessageFormat v2 postProcessor for i18next/react-i18next",
   "private": false,
   "main": "dist/index.js",
