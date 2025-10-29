@@ -128,7 +128,6 @@ where count is some variable `let count: number;`
 - Messages are compiled and cached per language for performance
 - The cury-tag conversion is intentionally minimal and safe. It only recognizes tags defined in the alias list.
 - If you switch languages at runtime, the plugin automatically reuses or recompiles as needed.
-- Nested styling is currently not possible (`{#bold}{#italics}text{/italics}{/bold}`)
 
 ## Acknowledgements
 
