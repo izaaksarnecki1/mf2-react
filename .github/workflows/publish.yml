@@ -9,7 +9,10 @@ on:
 
 permissions:
   contents: read
-  id-token: write
+
+concurrency:
+  group: publish-mf2react-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   publish:
@@ -26,22 +29,22 @@ jobs:
 
       - name: Detect version change
         id: ver
+        shell: bash
         run: |
+          set -euo pipefail
           if git rev-parse HEAD^ >/dev/null 2>&1; then
             BEFORE="HEAD^"
           else
             BEFORE="HEAD"
           fi
-          if git diff --quiet $BEFORE HEAD -- package.json; then
-            echo "changed=false" >> $GITHUB_OUTPUT
+
+          BEFORE_VER=$(git show "$BEFORE:mf2react/package.json" | jq -r .version 2>/dev/null || echo "")
+          NOW_VER=$(jq -r .version package.json)
+
+          if [ -n "$NOW_VER" ] && [ "$BEFORE_VER" != "$NOW_VER" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           else
-            BEFORE_VER=$(git show $BEFORE:mf2react/package.json | jq -r .version 2>/dev/null || echo "")
-            NOW_VER=$(jq -r .version package.json)
-            if [ "$BEFORE_VER" != "$NOW_VER" ] && [ -n "$NOW_VER" ]; then
-              echo "changed=true" >> $GITHUB_OUTPUT
-            else
-              echo "changed=false" >> $GITHUB_OUTPUT
-            fi
+            echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Setup Node
@@ -59,9 +62,11 @@ jobs:
         if: steps.ver.outputs.changed == 'true'
         run: npm run build
 
-      - name: Publish to npm (OIDC, no token)
+      - name: Publish to npm
         if: steps.ver.outputs.changed == 'true'
-        run: npm publish
+        env: 
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
 
       - name: Skip (no version change)
         if: steps.ver.outputs.changed != 'true'
