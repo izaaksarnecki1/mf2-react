@@ -20,7 +20,7 @@ This package bridges the gap by combining two worlds:
 
 - It lets you keep/use MF2 syntax for logic (plural, select etc.)
 - It adds support for lightweight markup using curly tags like {#strong} and {#em}.
-- It converts those curly tags to real angle-bracket tags that can be safely rendered by the `<Trans>` component from `react-i18next`.
+- It converts those curly tags to real angle-bracket tags that can be safely rendered by the `Trans` component from `react-i18next`.
 
 You get precise grammatical control and rich formatting, without giving up i18next's familiar API or resorting to `dangerouslySetInnerHTML`
 
