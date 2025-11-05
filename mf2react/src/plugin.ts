@@ -1,5 +1,5 @@
-import type { PostProcessorModule, TOptions } from "i18next";
 import MessageFormat from "@messageformat/core";
+import type { PostProcessorModule, TOptions } from "i18next";
 
 const mflng = new Map<string, MessageFormat>();
 
@@ -27,7 +27,7 @@ const tagAlias: Record<string, string> = {
   em: "em",
 };
 
-function mf2CurlyToAngle(input: string): string {
+export function mf2CurlyToAngle(input: string): string {
   input = input.replace(/\{#([A-Za-z][\w-]*)\s*\/\}/g, (_, t) => {
     const html = tagAlias[t] || t;
     return `<${html} />`;

@@ -1,6 +1,6 @@
 {
   "name": "mf2react",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "MessageFormat v2 postProcessor for i18next/react-i18next",
   "private": false,
   "main": "dist/index.js",
@@ -20,7 +20,8 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "jest"
   },
   "peerDependencies": {
     "@messageformat/core": "^3.4.0",
@@ -29,10 +30,24 @@
     "tsup": "^8.5.0"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.0",
     "@types/react": "^19.1.12",
+    "jest": "^30.2.0",
+    "ts-jest": "^29.4.5",
     "typescript": "^5.9.2"
   },
   "publishConfig": {
     "access": "public"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "roots": [
+      "<rootDir>/__tests__"
+    ],
+    "testMatch": [
+      "**/*.test.ts"
+    ]
   }
 }

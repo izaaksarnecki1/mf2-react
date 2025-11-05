@@ -55,6 +55,10 @@ jobs:
         if: steps.ver.outputs.changed == 'true'
         run: npm ci
 
+      - name: Run Tests
+        if: steps.ver.outputs.changed == 'true'
+        run: npm test
+
       - name: Build
         if: steps.ver.outputs.changed == 'true'
         run: npm run build
