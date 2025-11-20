@@ -1,3 +1,3 @@
 {
-  "apples": "{#bold}How many apples:{/bold} {value, plural, one {# apple} other {# apples}}"
+  "apples": ".input {$value :number}\n.match $value\none   {{{#bold}How many apples:{/bold} {$value} apple}}\n*     {{{#bold}How many apples:{/bold} {$value} apples}}"
 }

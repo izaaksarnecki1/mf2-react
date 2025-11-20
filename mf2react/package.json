@@ -1,6 +1,6 @@
 {
   "name": "mf2react",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "MessageFormat v2 postProcessor for i18next/react-i18next",
   "private": false,
   "main": "dist/index.js",
@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.1.12",
+    "messageformat": "^4.0.0-13",
     "typescript": "^5.9.2"
   },
   "publishConfig": {

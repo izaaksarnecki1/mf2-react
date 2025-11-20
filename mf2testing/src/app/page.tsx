@@ -48,6 +48,7 @@ export default function Home() {
         </button>
       </div>
       <br></br>
+      <Trans i18nKey={"notifications"} values={{ name: "Izaak", count: 4}}/>
     </div>
   );
 }

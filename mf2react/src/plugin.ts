@@ -1,17 +1,5 @@
 import type { PostProcessorModule, TOptions } from "i18next";
-import MessageFormat from "@messageformat/core";
-
-const mflng = new Map<string, MessageFormat>();
-
-const getMf = (lng?: string) => {
-  const lang = lng || "en";
-  let mf = mflng.get(lang);
-  if (!mf) {
-    mf = new MessageFormat(lang);
-    mflng.set(lang, mf);
-  }
-  return mf;
-};
+import { MessageFormat } from "messageformat";
 
 const tagAlias: Record<string, string> = {
   bold: "strong",
@@ -27,6 +15,30 @@ const tagAlias: Record<string, string> = {
   em: "em",
 };
 
+
+const buildArgs = (options: TOptions): Record<string, unknown> => {
+  const args: Record<string, unknown> = {};
+
+  if (options) {
+    Object.assign(args, options);
+
+    const nested = (options as any).values;
+    if (nested && typeof nested === "object") {
+      Object.assign(args, nested);
+    }
+  }
+
+  delete (args as any).lng;
+  delete (args as any).postProcess;
+  delete (args as any).ns;
+  delete (args as any).keyPrefix;
+  delete (args as any).defaultValue;
+  delete (args as any).i18nDefaultValue;
+
+  return args;
+};
+
+// Fallback for non-mf2
 function mf2CurlyToAngle(input: string): string {
   input = input.replace(/\{#([A-Za-z][\w-]*)\s*\/\}/g, (_, t) => {
     const html = tagAlias[t] || t;
@@ -43,10 +55,48 @@ function mf2CurlyToAngle(input: string): string {
   return input;
 }
 
-const compiledCache = new Map<
-  string,
-  (params: Record<string, unknown>) => string
->();
+function partsToHtml(parts: any[], args: Record<string, unknown>): string {
+  let out = "";
+
+  for (const part of parts) {
+    if (part.type === "markup") {
+      const tag = tagAlias[part.name] || part.name;
+      if (part.kind === "open") {
+        out += `<${tag}>`;
+      } else if (part.kind === "close") {
+        out += `</${tag}>`;
+      } else if (part.kind === "standalone") {
+        out += `<${tag} />`;
+      }
+      continue;
+    }
+
+    // everything else, text, string, number
+    if ("value" in part && part.value != null) {
+      out += String(part.value);
+      continue;
+    }
+
+    // fallback
+    if (typeof part.source === "string") {
+      const m = /^\$([A-Za-z][\w-]*)$/.exec(part.source.trim());
+      if (m) {
+        const varName = m[1];
+        const v = args[varName!];
+        if (v != null) {
+          out += String(v);
+          continue;
+        }
+      }
+      if (part.value != null) {
+        out += String(part.value);
+      }
+    }
+  }
+  return out;
+};
+
+const compiledCache = new Map<string, MessageFormat>();
 
 export const MF2PostProcessor: PostProcessorModule = {
   name: "mf2",
@@ -60,20 +110,33 @@ export const MF2PostProcessor: PostProcessorModule = {
     if (typeof value !== "string") return value;
 
     const lng: string = options?.lng || translator?.lang;
-    const mf = getMf(lng);
-
     const cacheKey = `${lng || "en"}__${value}`;
+
     let fn = compiledCache.get(cacheKey);
+
     if (!fn) {
-      fn = mf.compile(value);
-      compiledCache.set(cacheKey, fn);
+      try {
+        fn = new MessageFormat(lng, value);
+        compiledCache.set(cacheKey, fn);
+      } catch (err) {
+        console.warn("[mf2react] MF2 parsing failed ", {lng, value, err});
+        return mf2CurlyToAngle(value);
+      }
     }
 
+    const mfArgs = buildArgs(options || {});
+
     try {
-      const out = fn({ ...options });
+      const parts = (fn as any).formatToParts(mfArgs);
+      if (Array.isArray(parts)) {
+        return partsToHtml(parts, mfArgs);
+      }
+      // fallback
+      const out = (fn as any).format(mfArgs);
       return typeof out === "string" ? mf2CurlyToAngle(out) : out;
-    } catch {
-      return value;
+    } catch (err) {
+      console.warn("[mf2react] MF2 formatting failed", { lng, value, mfArgs, err });
+      return mf2CurlyToAngle(value);
     }
   },
 };
