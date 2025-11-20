@@ -129,12 +129,9 @@ export const MF2PostProcessor: PostProcessorModule = {
     try {
       const parts = (fn as any).formatToParts(mfArgs);
       if (Array.isArray(parts)) {
-        console.log("Parsed as parts")
-        console.log("MF2 args", mfArgs);
         return partsToHtml(parts, mfArgs);
       }
       // fallback
-      console.log("parsed as mf1")
       const out = (fn as any).format(mfArgs);
       return typeof out === "string" ? mf2CurlyToAngle(out) : out;
     } catch (err) {
