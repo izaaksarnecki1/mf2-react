@@ -30,6 +30,7 @@
   },
   "devDependencies": {
     "@types/react": "^19.1.12",
+    "messageformat": "^4.0.0-13",
     "typescript": "^5.9.2"
   },
   "publishConfig": {

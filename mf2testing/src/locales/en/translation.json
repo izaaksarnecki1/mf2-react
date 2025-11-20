@@ -1,3 +1,4 @@
 {
-  "apples": "{#italics}{#bold}How many apples:{/bold}{/italics} {value, plural, one {# apple} other {# apples}}"
+  "apples": ".input {$value :number}\n.match $value\none   {{{#bold}How many apples:{/bold} {$value} apple}}\n*     {{{#bold}How many apples:{/bold} {$value} apples}}",
+  "notifications": ".input {$name :string}\n.input {$count :number}\n.match $count\n0   {{ {#bold}Hello {$name}!{/bold} You have no new messages }}\none {{ {#bold}Hello {$name}!{/bold} You have {$count} new message }}\n*   {{ {#bold}Hello {$name}!{/bold} You have {$count} new messages }}"
 }
