@@ -2,25 +2,43 @@
 
 A tiny, fast **MessageFormat v2 (MF2)** post-processor plugin for i18next / react-i18next.
 
-It compiles MF2 messages (via @messageformat/core), caches them per-language, and converts your `{#tag}...{/tag}` helpers into real tags (e.g. `<strong>`) so you can render rich text safely with `<Trans>`.
+It compiles MessageFormat2 message (via the messageformat package), caches them per language, and convert `{#tag}...{/tag}` lightweight markup into safe HTML tags, which `<Trans>` from `react-i18next` can render as JSX.
 
 ## Installation
 
 ```bash
-npm i mf2react
+npm install mf2react
 ```
+
+Requires:
+
+- i18next
+- react-i18next
+- messageformat@^4
 
 ## Why this exists
 
-Pluralization, gender, and select-based grammar rules differ across languages. MF2 provides a clean, standards-based way to express those differences. It is what powers ICU message syntax such as `({count, plural, one {...} other {...}})`.
+MF2 is the new standard for expressive, locale-aware messages with plural, select, and conditional logic.
 
-However, when building apps with i18next, you may also want rich text inside your translations. Mixing that kind of formatting with MF2's curly syntax quickly gets messy and unsafe if you rely on raw HTML strings.
+For example
 
-This package bridges the gap by combining two worlds:
+```mf2
+.match {$count: number}
+one    {{You have {$count} message}}
+*      {{You have {$count} messages}}
+```
 
-- It lets you keep/use MF2 syntax for logic (plural, select etc.)
-- It adds support for lightweight markup using curly tags like {#strong} and {#em}.
-- It converts those curly tags to real angle-bracket tags that can be safely rendered by the `Trans` component from `react-i18next`.
+However, real applications may also need styling inside translations (bold, italics, etc.). HTML inside translations is risky and not supported well in i18next. This plugin solves that by lettings translators write:
+
+```txt
+{#bold}Hello{/bold}, {$name}!
+```
+
+Which your app renders as:
+
+```html
+<strong>Hello</strong>, Name!
+```
 
 You get precise grammatical control and rich formatting, without giving up i18next's familiar API or resorting to `dangerouslySetInnerHTML`
 
@@ -33,9 +51,9 @@ You get precise grammatical control and rich formatting, without giving up i18ne
 In your i18n configuration, you need to register the MF2 post processor. Additionally, you should add the MF2ReactPreset to enable curly tag (from mf2) to JSX conversion. This is to allow for nested stylings and proper conversion.
 
 ```ts
-import i18n from "i18n";
+import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
-import { MF2PostProcessor } from "mf2react";
+import { MF2PostProcessor, MF2ReactPreset } from "mf2react";
 
 i18n
   .use(MF2PostProcessor) // Enable the post-processor
@@ -58,7 +76,7 @@ The `resources` field in the `init` function may directly contain translations, 
 import en from "./locales/en/translation.json";
 import no from "./locales/no/translation.json";
 
-import i18n from "i18n";
+import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import { MF2PostProcessor } from "mf2react";
 
@@ -77,26 +95,6 @@ i18n
 
 export default i18n;
 ```
-
-#### About translations
-
-The translations should follow standard key-value structure as desribed in the [i18next documentation](https://www.i18next.com/principles/translation-resolution). However, now it is possible to use MF2 syntax for the translations.
-
-```json
-{
-  "{message name}": "{translation in mf2 format}"
-}
-```
-
-An example may be:
-
-```json
-{
-  "apples": "{#bold}How many apples:{/bold} {value, plural, one {# apple} other {# apples}}"
-}
-```
-
-> **You can read more about MF2 syntax in the [MessageFormat2 syntax documentation](https://messageformat.unicode.org/docs/quick-start/#markup).**
 
 ---
 
@@ -137,11 +135,51 @@ Both options are functionally equivalent.
 Where you place the provider affects what becomes client-rendered.
 You may either wrap your whole application in the provider, or each component that uses translations. This is because `I18nextProvider` must be used in a client component. Choose the placement based on how much of your UI should be client-rendered.
 
-### 3. Render with `<Trans>`
+### 3. Write MF2 translations
+
+MF2 message definitions allow complex logic.
+Here are examples you can put in `translations.json`
+
+#### A simple example**
+
+```json
+{
+  "apples": ".input {$value :number}\n.match $value\none   {{ {#bold}How many apples:{/bold} {$value} apple }}\n*     {{ {#bold}How many apples:{/bold} {$value} apples }}"
+}
+```
+
+#### A multi-variable example
+
+```json
+{
+  "notifications": ".input {$name :string}\n.input {$count :number}\n.match $count\n0   {{ {#bold}Hello {$name}!{/bold} You have no new messages }}\none {{ {#bold}Hello {$name}!{/bold} You have {$count} new message }}\n*   {{ {#bold}Hello {$name}!{/bold} You have {$count} new messages }}"
+}
+```
+
+#### Curly-tag markup
+
+Supported tags include:
+
+```txt
+{#bold}…{/bold}
+{#strong}…{/strong}
+{#i}…{/i}
+{#em}…{/em}
+{#u}…{/u}
+{#s}…{/s}
+{#small}…{/small}
+{#code}…{/code}
+```
+
+They map to safe HTML tags (e.g. `<strong>, <em>` etc.), which `<Trans>` converts to JSX
+
+> You can read more about MF2 syntax in the [MF2 documentation](https://messageformat.unicode.org/docs/translators/)
+
+### 4. Render with `<Trans>`
 
 Now you can render the `<Trans>` component as you usually would. For example:
 
-```ts
+```tsx
 import { Trans } from "react-i18next";
 
 export default function Component() {
@@ -150,16 +188,26 @@ export default function Component() {
     <Trans
       i18nKey="apples"
       values={
-        {
-          { value: count }
-        }
+        {{ value: count }}
       }
     />
   );
 }
 ```
 
-> You can read more about the Trans component in the [react-i18next documentation](https://react.i18next.com/latest/trans-component)
+Example output:
+**How many apples**: 2 apples
+
+Multi-variable usage:
+
+```tsx
+<Trans i18nKey="notifications" values={{ name: "Name", count: 4 }} />
+```
+
+Output:
+**Hello Name!** You have 4 new messages
+
+>You can read more about the Trans component in the [react-i18next documentation](https://react.i18next.com/latest/trans-component)
 
 ## Notes and limitations
 
@@ -167,6 +215,7 @@ export default function Component() {
 - Messages are compiled and cached per language for performance
 - The cury-tag conversion is intentionally minimal and safe. It only recognizes tags defined in the alias list.
 - If you switch languages at runtime, the plugin automatically reuses or recompiles as needed.
+- Unsupported MF2 syntax will fall back gracefully to raw string + curly tag conversion
 
 ## Acknowledgements
 
