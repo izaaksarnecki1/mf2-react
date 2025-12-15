@@ -22,9 +22,14 @@ const buildArgs = (options: TOptions): Record<string, unknown> => {
   if (options) {
     Object.assign(args, options);
 
-    const nested = (options as any).values;
-    if (nested && typeof nested === "object") {
-      Object.assign(args, nested);
+    const candidates = [
+      (options as any).values,
+      (options as any).replace,
+      (options as any).interpolation?.defaultVariables,
+    ];
+
+    for (const c of candidates) {
+      if (c && typeof c === "object") Object.assign(args, c);
     }
   }
 
@@ -38,7 +43,6 @@ const buildArgs = (options: TOptions): Record<string, unknown> => {
   return args;
 };
 
-// Fallback for non-mf2
 function mf2CurlyToAngle(input: string): string {
   input = input.replace(/\{#([A-Za-z][\w-]*)\s*\/\}/g, (_, t) => {
     const html = tagAlias[t] || t;
@@ -56,45 +60,46 @@ function mf2CurlyToAngle(input: string): string {
 }
 
 function partsToHtml(parts: any[], args: Record<string, unknown>): string {
-  let out = "";
+  const renderPart = (part: any): string => {
+    if (!part) return "";
 
-  for (const part of parts) {
+    // handle markup conversion
     if (part.type === "markup") {
       const tag = tagAlias[part.name] || part.name;
-      if (part.kind === "open") {
-        out += `<${tag}>`;
-      } else if (part.kind === "close") {
-        out += `</${tag}>`;
-      } else if (part.kind === "standalone") {
-        out += `<${tag} />`;
-      }
-      continue;
+      if (part.kind === "open") return `<${tag}>`;
+      if (part.kind === "close") return `</${tag}>`;
+      if (part.kind === "standalone") return `<${tag} />`;
+      return "";
     }
 
-    // everything else, text, string, number
-    if ("value" in part && part.value != null) {
-      out += String(part.value);
-      continue;
+    // plain text
+    if (part.type === "text" && part.value != null) {
+      return String(part.value);
     }
 
-    // fallback
+    // output may be in part.value
+    if (part.value != null) {
+      return String(part.value);
+    }
+
+    // output may be in parts
+    if (Array.isArray(part.parts)) {
+      return part.parts.map(renderPart).join("");
+    }
+
     if (typeof part.source === "string") {
       const m = /^\$([A-Za-z][\w-]*)$/.exec(part.source.trim());
       if (m) {
-        const varName = m[1];
-        const v = args[varName!];
-        if (v != null) {
-          out += String(v);
-          continue;
-        }
-      }
-      if (part.value != null) {
-        out += String(part.value);
+        const v = args[m[1]!];
+        return v != null ? String(v) : "";
       }
     }
-  }
-  return out;
-};
+
+    return "";
+  };
+
+  return parts.map(renderPart).join("");
+}
 
 const compiledCache = new Map<string, MessageFormat>();
 
@@ -128,10 +133,12 @@ export const MF2PostProcessor: PostProcessorModule = {
 
     try {
       const parts = (fn as any).formatToParts(mfArgs);
+
       if (Array.isArray(parts)) {
         return partsToHtml(parts, mfArgs);
       }
-      // fallback
+
+      // if formattoparts isn't available, fallback to plain string formatting
       const out = (fn as any).format(mfArgs);
       return typeof out === "string" ? mf2CurlyToAngle(out) : out;
     } catch (err) {
